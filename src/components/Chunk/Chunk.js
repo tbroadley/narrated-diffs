@@ -15,7 +15,7 @@ export default ({ baseKey, content, changes }) => (
         ln,
         content,
       }) => {
-        const key = `${baseKey}-${type === 'normal' ? `${ln1}-${ln2}` : ln}`;
+        const key = `${baseKey}-${type}-${type === 'normal' ? `${ln1}-${ln2}` : ln}`;
         return (
           <Change
             key={key}
