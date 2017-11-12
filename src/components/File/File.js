@@ -43,6 +43,7 @@ export default ({ from, to, chunks }) => {
         to === DEV_NULL ? null : chunks.map(({
           oldStart,
           newStart,
+          content,
           changes,
         }) => {
           const key = `${from}-${to}-${oldStart}-${newStart}`;
@@ -50,7 +51,8 @@ export default ({ from, to, chunks }) => {
             <Chunk
               key={key}
               baseKey={key}
-              {...{ from, to, oldStart, newStart, changes }}
+              content={content}
+              changes={changes}
             />
           );
         })
