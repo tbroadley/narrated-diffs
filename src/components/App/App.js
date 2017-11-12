@@ -12,10 +12,11 @@ const Diff = SortableContainer(({ diff = [] }) => (
         from,
         to,
         chunks,
+        chunkIndex
       }, index) => (
         <File
-          key={`${from}-${to}`}
-          baseKey={`${from}-${to}`}
+          key={`${from}-${to}-${chunkIndex}`}
+          baseKey={`${from}-${to}-${chunkIndex}`}
           {...{ index, from, to, chunks }}
         />
       ))
@@ -37,7 +38,7 @@ class App extends Component {
       .then(response => response.text())
       .then(parseDiff)
       .then(diff => flatMap(diff, ({ from, to, chunks }) => {
-        return chunks.map(chunk => ({ from, to, chunks: [chunk] }));
+        return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex }));
       }))
       .then(diff => this.setState({ diff }));
   }
