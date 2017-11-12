@@ -1,8 +1,9 @@
 import React from 'react';
+import { SortableElement } from 'react-sortable-hoc';
 import Chunk from '../Chunk/Chunk';
 import './File.css';
 
-export default ({ from, to, chunks }) => {
+export default SortableElement(({ index, from, to, chunks }) => {
   const DEV_NULL = '/dev/null';
 
   let fileDescription;
@@ -59,4 +60,4 @@ export default ({ from, to, chunks }) => {
       }
     </div>
   );
-};
+});
