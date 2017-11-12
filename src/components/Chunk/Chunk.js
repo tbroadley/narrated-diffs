@@ -1,5 +1,6 @@
 import React from 'react';
 import Change from '../Change/Change';
+import './Chunk.css';
 
 export default ({ baseKey, content, changes }) => (
   <div className='chunk'>

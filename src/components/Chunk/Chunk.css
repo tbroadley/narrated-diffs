@@ -1,0 +1,11 @@
+.chunk {
+  margin: 1rem 0 0;
+}
+
+.chunk__content {
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin: 0 0 1rem;
+  font-family: monospace, monospace;
+  border-bottom: 1px solid black;
+}
