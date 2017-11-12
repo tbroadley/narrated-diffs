@@ -39,6 +39,12 @@ export default SortableElement(({ index, from, to, chunks }) => {
 
   return (
     <div className='file'>
+      <textarea
+        className='file__user-text'
+        rows='6'
+        placeholder='Insert a description for the chunk below'
+      >
+      </textarea>
       {fileDescription}
       {
         to === DEV_NULL ? null : chunks.map(({
