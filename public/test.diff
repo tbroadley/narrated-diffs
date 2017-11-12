@@ -1,0 +1,359 @@
+diff --git a/dwitter/feed/views.py b/dwitter/feed/views.py
+index eb32048..a4774dc 100644
+--- a/dwitter/feed/views.py
++++ b/dwitter/feed/views.py
+@@ -92,12 +92,12 @@ def feed(request, page_nr, sort):
+
+
+ def dweet_show(request, dweet_id):
+-    dweet = get_object_or_404(Dweet, id=dweet_id)
++    dweet = get_object_or_404(Dweet.with_deleted, id=dweet_id)
+
+     context = {
+         'dweet': dweet,
+         'header_title': 'Dwitter',
+-        }
++    }
+
+     return render(request, 'feed/permalink.html', context)
+
+diff --git a/dwitter/migrations/0012_auto_20170228_2305.py b/dwitter/migrations/0012_auto_20170228_2305.py
+new file mode 100644
+index 0000000..7d9189b
+--- /dev/null
++++ b/dwitter/migrations/0012_auto_20170228_2305.py
+@@ -0,0 +1,42 @@
++# -*- coding: utf-8 -*-
++from __future__ import unicode_literals
++
++from django.db import migrations, models
++import django.db.models.deletion
++from django.conf import settings
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
++        ('dwitter', '0011_auto_20160819_0831'),
++    ]
++
++    operations = [
++        migrations.RenameField(
++            model_name='comment',
++            old_name='author',
++            new_name='_author',
++        ),
++        migrations.RenameField(
++            model_name='dweet',
++            old_name='author',
++            new_name='_author',
++        ),
++        migrations.AlterField(
++            model_name='dweet',
++            name='_author',
++            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to=settings.AUTH_USER_MODEL, null=True),
++        ),
++        migrations.AddField(
++            model_name='dweet',
++            name='deleted',
++            field=models.BooleanField(default=False),
++        ),
++        migrations.AlterField(
++            model_name='dweet',
++            name='reply_to',
++            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, blank=True, to='dwitter.Dweet', null=True),
++        ),
++    ]
+diff --git a/dwitter/models.py b/dwitter/models.py
+index 6112943..fb82b41 100644
+--- a/dwitter/models.py
++++ b/dwitter/models.py
+@@ -1,16 +1,54 @@
+ from django.db import models
++from django.contrib.auth import get_user_model
+ from django.contrib.auth.models import User
++from django.dispatch import receiver
++from django.db.models.signals import pre_delete
++
++
++def get_sentinel_user():
++    users = get_user_model().objects
++    return users.get_or_create(username='[deleted]', is_active=False)[0]
++
++
++@receiver(pre_delete, sender=User)
++def soft_delete_user_dweets(instance, **kwargs):
++    for dweet in Dweet.objects.filter(_author=instance):
++        dweet.delete()
++
++
++class NotDeletedDweetManager(models.Manager):
++    def get_queryset(self):
++        base_queryset = super(NotDeletedDweetManager, self).get_queryset()
++        return base_queryset.filter(deleted=False)
+
+
+ class Dweet(models.Model):
+     code = models.TextField()
+     posted = models.DateTimeField()
+-    reply_to = models.ForeignKey("self", on_delete=models.SET_NULL,
++    reply_to = models.ForeignKey("self", on_delete=models.DO_NOTHING,
+                                  null=True, blank=True)
+
+-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+     likes = models.ManyToManyField(User, related_name="liked")
+     hotness = models.FloatField(default=1.0)
++    deleted = models.BooleanField(default=False)
++
++    _author = models.ForeignKey(User, on_delete=models.SET_NULL,
++                                null=True, blank=True)
++
++    @property
++    def author(self):
++        return self._author or get_sentinel_user()
++
++    @author.setter
++    def author(self, value):
++        self._author = value
++
++    objects = NotDeletedDweetManager()
++    with_deleted = models.Manager()
++
++    def delete(self):
++        self.deleted = True
++        self.save()
+
+     def __unicode__(self):
+         return 'd/' + str(self.id) + ' (' + self.author.username + ')'
+@@ -24,7 +62,15 @@ class Comment(models.Model):
+     posted = models.DateTimeField()
+     reply_to = models.ForeignKey(Dweet, on_delete=models.CASCADE,
+                                  related_name="comments")
+-    author = models.ForeignKey(User, on_delete=models.CASCADE)
++    _author = models.ForeignKey(User, on_delete=models.CASCADE)
++
++    @property
++    def author(self):
++        return self._author
++
++    @author.setter
++    def author(self, value):
++        self._author = value
+
+     def __unicode__(self):
+         return ('c/' +
+diff --git a/dwitter/serializers.py b/dwitter/serializers.py
+index f248292..80aeec4 100644
+--- a/dwitter/serializers.py
++++ b/dwitter/serializers.py
+@@ -20,7 +20,9 @@ class Meta:
+
+ class DweetSerializer(serializers.ModelSerializer):
+     latest_comments = serializers.SerializerMethodField()
+-    reply_to = serializers.PrimaryKeyRelatedField(queryset=Dweet.objects.all())
++    reply_to = serializers.PrimaryKeyRelatedField(
++        queryset=Dweet.with_deleted.all()
++    )
+
+     class Meta:
+         model = Dweet
+diff --git a/dwitter/templates/base.html b/dwitter/templates/base.html
+index f783d8b..104505b 100644
+--- a/dwitter/templates/base.html
++++ b/dwitter/templates/base.html
+@@ -52,7 +52,7 @@
+       <div class=header-center-div>
+         <h2 class=header-title><a  href="{% url 'root' %}">{% block header_title %}Dwitter{% endblock %}</a></h2>
+         <br />
+-        {% block top-nav %}
++        {% block top-nav %}
+         {% endblock %}
+       </div>
+     </div>
+@@ -75,5 +75,5 @@ <h2 class=header-title><a  href="{% url 'root' %}">{% block header_title %}Dwitt
+   </body>
+       {% block after_body %}
+       {% endblock %}
+-
++
+ </html>
+diff --git a/dwitter/templates/feed/permalink.html b/dwitter/templates/feed/permalink.html
+index 56c182b..cf57924 100644
+--- a/dwitter/templates/feed/permalink.html
++++ b/dwitter/templates/feed/permalink.html
+@@ -42,20 +42,24 @@
+
+ <div class=dweet-feed>
+
+-  {% include 'snippets/dweet_card.html' %}
+-
+-  <div class=card>
+-  <code id=submit-help>
+-    u(t) is called 60 times per second.
+-    t: elapsed time in seconds.
+-    c: A 1920x1080 canvas.
+-    x: A 2D context for that canvas.
+-    S: Math.sin
+-    C: Math.cos
+-    T: Math.tan
+-    R: Generates rgba-strings, ex.: R(255, 255, 255, 0.5)
+-  </code>
+-  </div>
++  {% if dweet.deleted %}
++    {% include 'snippets/deleted_dweet_card.html' %}
++  {% else %}
++    {% include 'snippets/dweet_card.html' %}
++
++    <div class=card>
++    <code id=submit-help>
++      u(t) is called 60 times per second.
++      t: elapsed time in seconds.
++      c: A 1920x1080 canvas.
++      x: A 2D context for that canvas.
++      S: Math.sin
++      C: Math.cos
++      T: Math.tan
++      R: Generates rgba-strings, ex.: R(255, 255, 255, 0.5)
++    </code>
++    </div>
++  {% endif %}
+
+ </div>
+
+diff --git a/dwitter/templates/snippets/deleted_dweet_card.html b/dwitter/templates/snippets/deleted_dweet_card.html
+new file mode 100644
+index 0000000..6106be0
+--- /dev/null
++++ b/dwitter/templates/snippets/deleted_dweet_card.html
+@@ -0,0 +1,14 @@
++{% load subdomainurls %}
++<div class=dweet-wrapper>
++  <div class=dweet >
++    <div class=author-remix-wrapper>
++      <div class=dweet-author>
++        [deleted]
++      </div>
++      {% if dweet.reply_to %}
++        {% include 'snippets/remix_info.html' %}
++      {% endif %}
++    </div>
++    <p class=dweet-timestamp> {{ dweet.posted }} </p>
++  </div>
++</div>
+diff --git a/dwitter/templates/snippets/dweet_card.html b/dwitter/templates/snippets/dweet_card.html
+index a6ce5b2..a077d63 100644
+--- a/dwitter/templates/snippets/dweet_card.html
++++ b/dwitter/templates/snippets/dweet_card.html
+@@ -34,15 +34,8 @@
+         <div class=avatar style="background-image: url({{ dweet.author.email | to_gravatar_url }})"></div>
+         <a href="{% url 'user_feed' url_username=dweet.author.username %}">{{ dweet.author.username }}</a>
+     </div>
+-        {% if dweet.reply_to %}
+-      <div class=remix-info>
+-        remix of
+-        <a href="{% url 'dweet_show' dweet_id=dweet.reply_to.id %}">#{{dweet.reply_to.id}}</a>
+-         by
+-        <a href="{% url 'user_feed' url_username=dweet.reply_to.author.username %}">
+-          {{ dweet.reply_to.author.username }}</a>
+-        <div class=avatar style="background-image: url({{ dweet.reply_to.author.email | to_gravatar_url }})"></div>
+-      </div>
++      {% if dweet.reply_to %}
++        {% include 'snippets/remix_info.html' %}
+       {% endif %}
+     </div>
+     <br>
+diff --git a/dwitter/templates/snippets/remix_info.html b/dwitter/templates/snippets/remix_info.html
+new file mode 100644
+index 0000000..90cca34
+--- /dev/null
++++ b/dwitter/templates/snippets/remix_info.html
+@@ -0,0 +1,14 @@
++{% load to_gravatar_url %}
++<div class="remix-info">
++  remix of
++  <a href="{% url 'dweet_show' dweet_id=dweet.reply_to.id %}">#{{dweet.reply_to.id}}</a>
++  by
++  {% if dweet.reply_to.deleted %}
++    [deleted]
++  {% else %}
++    <a href="{% url 'user_feed' url_username=dweet.reply_to.author.username %}">
++      {{ dweet.reply_to.author.username }}
++    </a>
++    <div class="avatar" style="background-image: url({{ dweet.reply_to.author.email | to_gravatar_url }})"></div>
++  {% endif %}
++</div>
+diff --git a/dwitter/tests/test_dweet.py b/dwitter/tests/test_dweet.py
+index aac66d6..8f2af36 100644
+--- a/dwitter/tests/test_dweet.py
++++ b/dwitter/tests/test_dweet.py
+@@ -28,15 +28,16 @@ def test_dweet_renders_to_string_correctly(self):
+         self.assertEqual(Dweet.objects.get(id=1).__unicode__(), "d/1 (user1)")
+         self.assertEqual(Dweet.objects.get(id=2).__unicode__(), "d/2 (user2)")
+
+-    def test_dweet_reply_to_set_null_on_delete(self):
+-        Dweet.objects.get(id=1).delete()
+-        self.assertEqual(Dweet.objects.get(id=2).reply_to, None)
++    def test_dweet_reply_to_set_deleted_field_on_delete(self):
++        dweet1 = Dweet.objects.get(id=1)
++        dweet1.delete()
++        self.assertEqual(dweet1.deleted, True)
++        self.assertEqual(Dweet.objects.get(id=2).reply_to, dweet1)
+
+-    def test_dweet_author_cascade_on_delete(self):
++    def test_dweet_author_set_null_on_delete(self):
+         User.objects.get(username="user1").delete()
+-        with self.assertRaises(Dweet.DoesNotExist):
+-            Dweet.objects.get(id=1)
+-        Dweet.objects.get(id=2)
++        self.assertTrue(Dweet.with_deleted.get(id=1).deleted)
++        self.assertIsNotNone(Dweet.objects.get(id=2).author)
+
+     def test_dweet_has_correct_likes(self):
+         dweet1 = Dweet.objects.get(id=1)
+@@ -45,3 +46,13 @@ def test_dweet_has_correct_likes(self):
+
+         self.assertQuerysetEqual(dweet1.likes.all(), [])
+         self.assertQuerysetEqual(dweet2.likes.order_by('id'), all_users)
++
++    def test_default_manager_does_not_include_deleted_dweets(self):
++        second_dweet = [repr(Dweet.objects.get(id=2))]
++        Dweet.objects.get(id=1).delete()
++        self.assertQuerysetEqual(Dweet.objects.all(), second_dweet)
++
++    def test_with_deleted_manager_includes_deleted_dweets(self):
++        all_dweets = [repr(d) for d in Dweet.objects.all()]
++        Dweet.objects.get(id=1).delete()
++        self.assertQuerysetEqual(Dweet.with_deleted.all(), all_dweets)
+diff --git a/dwitter/user/views.py b/dwitter/user/views.py
+index 8f702c8..6ade5ad 100644
+--- a/dwitter/user/views.py
++++ b/dwitter/user/views.py
+@@ -34,7 +34,7 @@ def user_feed(request, url_username, page_nr, sort, dweets=None, url=None):
+     first = (page - 1) * dweets_per_page
+     last = page * dweets_per_page
+     if not dweets:
+-        dweets = Dweet.objects.filter(author=user)
++        dweets = Dweet.objects.filter(_author=user)
+     dweet_count = dweets.count()
+     total_awesome = dweets.annotate(
+         num_likes=Count('likes')).aggregate(
+@@ -45,7 +45,7 @@ def user_feed(request, url_username, page_nr, sort, dweets=None, url=None):
+         last = dweet_count
+
+     if not dweets:
+-        dweet_list = Dweet.objects.filter(author=user)
++        dweet_list = Dweet.objects.filter(_author=user)
+     else:
+         dweet_list = dweets
+
+diff --git a/dwitter/views.py b/dwitter/views.py
+index 5d3d706..e451337 100644
+--- a/dwitter/views.py
++++ b/dwitter/views.py
+@@ -13,4 +13,4 @@ class CommentViewSet(viewsets.ModelViewSet):
+                           IsAuthorOrReadOnly, )
+
+     def perform_create(self, serializer):
+-        serializer.save(author=self.request.user, posted=timezone.now())
++        serializer.save(_author=self.request.user, posted=timezone.now())
