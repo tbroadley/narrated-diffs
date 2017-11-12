@@ -1,3 +1,4 @@
+import flatMap from 'lodash/flatMap';
 import parseDiff from 'parse-diff';
 import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
@@ -35,6 +36,9 @@ class App extends Component {
     fetch('/test.diff')
       .then(response => response.text())
       .then(parseDiff)
+      .then(diff => flatMap(diff, ({ from, to, chunks }) => {
+        return chunks.map(chunk => ({ from, to, chunks: [chunk] }));
+      }))
       .then(diff => this.setState({ diff }));
   }
 
