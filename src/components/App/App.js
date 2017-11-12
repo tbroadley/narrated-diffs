@@ -14,18 +14,16 @@ class App extends Component {
   }
 
   render() {
-    return (
-      (this.state.diff || []).map(({
-        from,
-        to,
-        chunks,
-      }) => (
-        <File
-          key={`${from}-${to}`}
-          {...{ from, to, chunks }}
-        />
-      ))
-    );
+    return (this.state.diff || []).map(({
+      from,
+      to,
+      chunks,
+    }) => (
+      <File
+        key={`${from}-${to}`}
+        {...{ from, to, chunks }}
+      />
+    ));
   }
 }
 
