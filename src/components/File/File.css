@@ -1,7 +1,7 @@
 .file {
   margin: 1rem;
   padding: 1rem;
-  border: 1px solid black;
+  border: 1px solid #000000;
 }
 
 .file__description {
