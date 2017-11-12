@@ -1,3 +1,33 @@
 .change {
+  display: flex;
+  padding: 0 0.25rem;
+  line-height: 1.5;
+}
+
+.change--added {
+  background-color: #D7FFD7;
+}
+
+.change--deleted {
+  background-color: #FFD7D7;
+}
+
+.change__addition-or-deletion, .change__line-number, .change__content {
+  font-family: monospace, monospace;
+}
+
+.change__addition-or-deletion {
+  display: inline-block;
+  width: 1rem;
+}
+
+.change__line-number {
+  display: inline-block;
+  width: 2rem;
+  text-align: right;
+}
+
+.change__content {
+  margin-left: 1rem;
   white-space: pre;
 }
