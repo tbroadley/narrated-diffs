@@ -10,7 +10,6 @@ class App extends Component {
     fetch('/test.diff')
       .then(response => response.text())
       .then(parseDiff)
-      .then(diff => (console.log(diff), diff))
       .then(diff => this.setState({ diff }));
   }
 
