@@ -18,16 +18,19 @@
 
 .change__addition-or-deletion {
   display: inline-block;
+  flex-shrink: 0;
   width: 1rem;
 }
 
 .change__line-number {
   display: inline-block;
+  flex-shrink: 0;
   width: 2rem;
   text-align: right;
 }
 
 .change__content {
   margin-left: 1rem;
-  white-space: pre;
+  white-space: pre-wrap;
+  flex-grow: 0;
 }
