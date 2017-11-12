@@ -1,5 +1,6 @@
 import React from 'react';
 import Chunk from '../Chunk/Chunk';
+import './File.css';
 
 export default ({ from, to, chunks }) => {
   const DEV_NULL = '/dev/null';
@@ -9,19 +10,19 @@ export default ({ from, to, chunks }) => {
   if (from === to) {
     fileDescription = (
       <p className='file__description'>
-        {from}
+        <span className='file__name'>{from}</span>
       </p>
     );
   } else if (from === DEV_NULL) {
     fileDescription = (
       <p className='file__description'>
-        File <span className='file__name--created'>{to}</span> created
+        File <span className='file__name'>{to}</span> created
       </p>
     );
   } else if (to === DEV_NULL) {
     fileDescription = (
       <p className='file__description'>
-        File <span className='file__name--deleted'>{to}</span> deleted
+        File <span className='file__name'>{to}</span> deleted
       </p>
     );
   } else {
