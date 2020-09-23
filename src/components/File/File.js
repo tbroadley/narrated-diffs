@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { SortableElement } from 'react-sortable-hoc';
+import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import Chunk from '../Chunk/Chunk';
 import './File.css';
+import move from '../../move.svg';
+
+const DragHandle = SortableHandle(() => <img className="file__drag-handle" src={move} alt="Drag and drop this file" />)
 
 export default SortableElement(({ index, from, to, chunks }) => {
   const [description, setDescription] = React.useState('');
@@ -43,6 +46,7 @@ export default SortableElement(({ index, from, to, chunks }) => {
 
   return (
     <div className='file'>
+      <DragHandle />
       <div className='file__user-text'>
         <ReactQuill
           value={description}

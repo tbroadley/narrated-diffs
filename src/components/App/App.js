@@ -21,6 +21,7 @@ const Diff = SortableContainer(({ diff = [] }) => (
         />
       ))
     }
+    <p>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a></p>
   </div>
 ));
 
@@ -70,7 +71,7 @@ class App extends Component {
     }
 
     return (
-      <Diff diff={diff} onSortEnd={this.onSortEnd} />
+      <Diff diff={diff} onSortEnd={this.onSortEnd} useDragHandle />
     );
   }
 }
