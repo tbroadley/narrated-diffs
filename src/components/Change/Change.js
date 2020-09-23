@@ -11,7 +11,7 @@ export default ({ type, ln2, ln, content }) => (
       {type === 'normal' ? ln2 : ln}
     </div>
     <div className='change__content'>
-      {type === 'normal' ? content : content.slice(1)}
+      {content.slice(1)}
     </div>
   </div>
 )
