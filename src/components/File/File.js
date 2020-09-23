@@ -1,9 +1,13 @@
 import React from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { SortableElement } from 'react-sortable-hoc';
 import Chunk from '../Chunk/Chunk';
 import './File.css';
 
 export default SortableElement(({ index, from, to, chunks }) => {
+  const [description, setDescription] = React.useState('');
+
   const DEV_NULL = '/dev/null';
 
   let fileDescription;
@@ -39,12 +43,12 @@ export default SortableElement(({ index, from, to, chunks }) => {
 
   return (
     <div className='file'>
-      <textarea
-        className='file__user-text'
-        rows='6'
-        placeholder='Insert a description for the chunk below'
-      >
-      </textarea>
+      <div className='file__user-text'>
+        <ReactQuill
+          value={description}
+          onChange={(d) => setDescription ( d )}
+        />
+      </div>
       {fileDescription}
       {
         to === DEV_NULL ? null : chunks.map(({
