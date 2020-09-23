@@ -30,7 +30,7 @@ export default SortableElement(({ index, from, to, chunks }) => {
   } else if (to === DEV_NULL) {
     fileDescription = (
       <p className='file__description'>
-        File <span className='file__name'>{to}</span> deleted
+        File <span className='file__name'>{from}</span> deleted
       </p>
     );
   } else {
