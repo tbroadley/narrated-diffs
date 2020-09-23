@@ -8,7 +8,7 @@ import move from '../../move.svg';
 
 const DragHandle = SortableHandle(() => <img className="file__drag-handle" src={move} alt="Drag and drop this file" />)
 
-export default SortableElement(({ index, from, to, chunks }) => {
+const File = SortableElement(({ index, from, to, chunks }) => {
   const [description, setDescription] = React.useState('');
 
   const DEV_NULL = '/dev/null';
@@ -75,3 +75,13 @@ export default SortableElement(({ index, from, to, chunks }) => {
     </div>
   );
 });
+
+export default (props) => {
+  const BANNED_FILES = ['package-lock.json', 'yarn.lock'];
+
+  if (BANNED_FILES.includes(props.from) || BANNED_FILES.includes(props.to)) {
+    return null;
+  }
+
+  return <File {...props} />;
+}
