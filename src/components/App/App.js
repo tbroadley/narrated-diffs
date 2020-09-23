@@ -24,6 +24,28 @@ const Diff = SortableContainer(({ diff = [] }) => (
   </div>
 ));
 
+class PasteDiff extends Component {
+  state = { diff: "" };
+
+  onChange = (event) => {
+    console.log(event.target.value)
+    this.setState({ diff: event.target.value })
+  }
+
+  render() {
+    return (
+      <div className='app'>
+        <p>Paste in a Git diff:</p>
+        <p>
+          <textarea value={this.state.diff} onChange={this.onChange} />
+        </p>
+        <button onClick={() => this.props.setDiff(this.state.diff)}>Lit that diff!</button>
+      </div>
+    )
+  }
+}
+
+
 class App extends Component {
   state = {};
 
@@ -33,19 +55,23 @@ class App extends Component {
     });
   };
 
-  componentDidMount() {
-    fetch('/test.diff')
-      .then(response => response.text())
-      .then(parseDiff)
-      .then(diff => flatMap(diff, ({ from, to, chunks }) => {
-        return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex }));
-      }))
-      .then(diff => this.setState({ diff }));
+  setDiff = (diff) => {
+    const parsedDiff = parseDiff(diff);
+    const flattenedDiff = flatMap(parsedDiff, ({ from, to, chunks }) => {
+      return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex }));
+    })
+    this.setState({ diff: flattenedDiff });
   }
 
   render() {
+    const { diff } = this.state;
+
+    if (!diff) {
+      return <PasteDiff setDiff={this.setDiff} />
+    }
+
     return (
-      <Diff diff={this.state.diff} onSortEnd={this.onSortEnd} />
+      <Diff diff={diff} onSortEnd={this.onSortEnd} />
     );
   }
 }
