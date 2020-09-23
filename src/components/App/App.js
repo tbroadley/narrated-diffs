@@ -28,7 +28,6 @@ class PasteDiff extends Component {
   state = { diff: "" };
 
   onChange = (event) => {
-    console.log(event.target.value)
     this.setState({ diff: event.target.value })
   }
 
