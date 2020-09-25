@@ -71,9 +71,10 @@ class App extends Component {
       return
     }
 
+    this.setState({ loading: true })
     const response = await fetch(`http://localhost:3500/diffs/${id}`)
     const { diff } = await response.json(); 
-    this.setState({ id, diff })
+    this.setState({ id, diff, loading: false })
   }
 
   persistDiff = throttle(async () => {
@@ -129,7 +130,11 @@ class App extends Component {
   }
 
   render() {
-    const { diff } = this.state;
+    const { loading, diff } = this.state;
+
+    if (loading) {
+      return <p>Loading...</p>
+    }
 
     if (!diff) {
       return <PasteDiff setDiff={this.setDiff} />
