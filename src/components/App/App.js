@@ -37,7 +37,7 @@ class PasteDiff extends Component {
   }
 
   fetchDiff = async () => {
-    const response = await fetch(`https://localhost:3500/diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
+    const response = await fetch(`http://localhost:3500/diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
     this.props.setDiff(await response.text())
   }
 
