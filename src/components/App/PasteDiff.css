@@ -27,8 +27,13 @@
 
     border: 1px solid #aaaaaa;
     border-radius: 5px;
+    border-bottom: none;
 
     cursor: pointer;
+}
+
+.paste-diff__tab--active {
+    background-color: #f3f3f3;
 }
 
 .paste-diff__tab:not(:last-child) {
@@ -38,6 +43,11 @@
 .paste-diff__tab-body {
     height: 500px;
     max-height: 100%;
+
+    padding: 0 1rem;
+
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
 }
 
 .paste-diff__tab-body input, .paste-diff__tab-body textarea {
