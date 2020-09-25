@@ -30,10 +30,19 @@ const Diff = SortableContainer(({ diff = [], changeDescription }) => (
 ));
 
 class PasteDiff extends Component {
-  state = { diff: "" };
+  state = { diff: "", url: "" };
 
   onChange = (event) => {
-    this.setState({ diff: event.target.value })
+    this.setState({ [event.target.name]: event.target.value })
+  }
+
+  fetchDiff = () => {
+    // FIXME use this.state.url to fetch the diff from GitHub, like
+    // https://github.com/nushell/demo/pull/63.diff
+    // remove anything after the PR number, like pull/63/files
+    // the result redirects! Something like
+    // https://patch-diff.githubusercontent.com/raw/nushell/demo/pull/63.diff
+    console.log(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))
   }
 
   render() {
@@ -41,9 +50,14 @@ class PasteDiff extends Component {
       <div className='app'>
         <p>Paste in a Git diff:</p>
         <p>
-          <textarea value={this.state.diff} onChange={this.onChange} />
+          <textarea name="diff" value={this.state.diff} onChange={this.onChange} />
         </p>
         <button onClick={() => this.props.setDiff(this.state.diff)}>Lit that diff!</button>
+        <p>Or the URL of a Pull Request on GitHub:</p>
+        <p>
+          <input name="url" value={this.state.url} onChange={this.onChange} />
+        </p>
+        <button onClick={() => this.fetchDiff()}>Lit that diff!</button>
       </div>
     )
   }
