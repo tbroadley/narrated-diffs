@@ -1,6 +1,5 @@
 import { throttle } from 'lodash';
 import flatMap from 'lodash/flatMap';
-import fetch from 'node-fetch';
 import parseDiff from 'parse-diff';
 import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
