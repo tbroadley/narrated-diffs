@@ -1,0 +1,51 @@
+.paste-diff {
+    height: 100%;
+    width: 500px;
+    max-width: 100%;
+
+    margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.paste-diff__tabs {
+    width: 100%;
+    display: flex;
+}
+
+.paste-diff__tab {
+    height: 48px;
+    width: 72px;
+
+    font-size: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.paste-diff__tab:not(:last-child) {
+    border-right: none;
+}
+
+.paste-diff__tab-body {
+    height: 500px;
+    max-height: 100%;
+}
+
+.paste-diff__tab-body input, .paste-diff__tab-body textarea {
+    width: 100%;
+}
+
+.paste-diff__tab-body textarea {
+    height: 200px;
+    box-sizing: border-box;
+    resize: none;
+}

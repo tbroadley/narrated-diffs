@@ -104,7 +104,7 @@ class App extends Component {
     const { loading, diff } = this.state;
 
     if (loading) {
-      return <p>Loading...</p>
+      return <div className='app'><p>Loading...</p></div>
     }
 
     if (!diff) {
