@@ -10,6 +10,9 @@ const init = async () => {
     server.route({
       method: 'GET',
       path: '/diff',
+      options: {
+        cors: true,
+      },
       handler: async (request, h) => {
           // FIXME add validation to only fetch diffs, e.g. it has to end with .diff
           const response = await fetch(request.query.url);
