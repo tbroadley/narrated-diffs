@@ -53,9 +53,25 @@ class PasteDiff extends Component {
 class App extends Component {
   state = {};
 
+  componentDidMount() {
+    const storedDiff = localStorage.getItem("diff");
+    if (!storedDiff) {
+      return;
+    }
+    this.setState({
+      diff: JSON.parse(storedDiff)
+    });
+  }
+
+  storeLocally() {
+    localStorage.setItem("diff", JSON.stringify(this.state.diff));
+  }
+
   onSortEnd = ({ oldIndex, newIndex }) => {
     this.setState({
       diff: arrayMove(this.state.diff, oldIndex, newIndex),
+    }, () => {
+      this.storeLocally();
     });
   };
 
@@ -64,7 +80,9 @@ class App extends Component {
     const diff = flatMap(parsedDiff, ({ from, to, chunks }) => {
       return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex, description: '' }));
     })
-    this.setState({ diff });
+    this.setState({ diff }, () => {
+      this.storeLocally();
+    });
   }
 
   changeDescription = (from, to, chunkIndex, description) => {
@@ -77,7 +95,9 @@ class App extends Component {
     }
 
     file.description = description;
-    this.setState({ diff: this.state.diff })
+    this.setState({ diff: this.state.diff }, () => {
+      this.storeLocally();
+    })
   }
 
   render() {
