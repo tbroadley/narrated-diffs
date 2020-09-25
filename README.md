@@ -8,10 +8,10 @@ Paste a diff into the tool (you can easily get one by adding `.diff` to the end 
 
 ### MLP (minimum loveable product)
 
-- Store narrated diffs in a database and make them accessible to others
+- [x] Store narrated diffs in a database and make them accessible to others
   - Store the JSON of the App's `diff` state
   - Give diffs unique, unguessable identifiers on creation (on explicit save?)
-- Allow pasting in a link to a GitHub PR and initialise a narrated diff for it
+- [x] Allow pasting in a link to a GitHub PR and initialise a narrated diff for it
   - GitHub doesn't allow cross-origin requests, so we'll need to fetch the diff on the server
 
 ### Later
