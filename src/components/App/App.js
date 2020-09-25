@@ -36,13 +36,9 @@ class PasteDiff extends Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
-  fetchDiff = () => {
-    // FIXME use this.state.url to fetch the diff from GitHub, like
-    // https://github.com/nushell/demo/pull/63.diff
-    // remove anything after the PR number, like pull/63/files
-    // the result redirects! Something like
-    // https://patch-diff.githubusercontent.com/raw/nushell/demo/pull/63.diff
-    console.log(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))
+  fetchDiff = async () => {
+    const response = await fetch(`https://localhost:3500/diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
+    this.props.setDiff(await response.text())
   }
 
   render() {
