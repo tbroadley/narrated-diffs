@@ -13,7 +13,7 @@ const init = async () => {
       handler: async (request, h) => {
           // FIXME add validation to only fetch diffs, e.g. it has to end with .diff
           const response = await fetch(request.query.url);
-          return response.text();
+          return h.response(await response.text()).type('text/plain');
       }
     });
 
