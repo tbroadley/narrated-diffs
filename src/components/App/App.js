@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import File from '../File/File';
 import './App.css';
+import { PasteDiff } from './PasteDiff';
 
 const { REACT_APP_SERVER_URL } = process.env;
 
@@ -33,37 +34,6 @@ const Diff = SortableContainer(({ diff = [], changeDescription }) => (
   </div>
 ));
 
-class PasteDiff extends Component {
-  state = { diff: "", url: "" };
-
-  onChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value })
-  }
-
-  fetchDiff = async () => {
-    const response = await fetch(`${REACT_APP_SERVER_URL}/github-diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
-    this.props.setDiff(await response.text())
-  }
-
-  render() {
-    return (
-      <div className='app'>
-        <p>Paste in a Git diff:</p>
-        <p>
-          <textarea name="diff" value={this.state.diff} onChange={this.onChange} />
-        </p>
-        <button onClick={() => this.props.setDiff(this.state.diff)}>Lit that diff!</button>
-        <p>Or the URL of a Pull Request on GitHub:</p>
-        <p>
-          <input name="url" value={this.state.url} onChange={this.onChange} />
-        </p>
-        <button onClick={() => this.fetchDiff()}>Lit that diff!</button>
-      </div>
-    )
-  }
-}
-
-
 class App extends Component {
   state = {};
 
@@ -75,7 +45,7 @@ class App extends Component {
 
     this.setState({ loading: true })
     const response = await fetch(`${REACT_APP_SERVER_URL}/diffs/${id}`)
-    const { diff } = await response.json(); 
+    const { diff } = await response.json();
     this.setState({ id, diff, loading: false })
   }
 
