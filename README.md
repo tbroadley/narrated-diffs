@@ -33,3 +33,5 @@ Paste a diff into the tool (you can easily get one by adding `.diff` to the end 
   - Webhook from GitHub to Narrated Diffs backend that is sent on PR merge?
   - GitHub Actions?
 - Syntax highlighting
+- Separate reviewing and editing modes
+  - Want to render the HTML from Quill - need to pass through `rehype-sanitize`, preferably on the server
