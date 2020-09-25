@@ -5,18 +5,22 @@ import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import File from '../File/File';
 import './App.css';
 
-const Diff = SortableContainer(({ diff = [] }) => (
+const Diff = SortableContainer(({ diff = [], changeDescription }) => (
   <div className='app'>
     {
       diff.map(({
         from,
         to,
         chunks,
-        chunkIndex
+        chunkIndex,
+        description,
       }, index) => (
         <File
           key={`${from}-${to}-${chunkIndex}`}
           baseKey={`${from}-${to}-${chunkIndex}`}
+          description={description}
+          changeDescription={changeDescription}
+          chunkIndex={chunkIndex}
           {...{ index, from, to, chunks }}
         />
       ))
@@ -55,12 +59,25 @@ class App extends Component {
     });
   };
 
-  setDiff = (diff) => {
-    const parsedDiff = parseDiff(diff);
-    const flattenedDiff = flatMap(parsedDiff, ({ from, to, chunks }) => {
-      return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex }));
+  setDiff = (rawDiff) => {
+    const parsedDiff = parseDiff(rawDiff);
+    const diff = flatMap(parsedDiff, ({ from, to, chunks }) => {
+      return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex, description: '' }));
     })
-    this.setState({ diff: flattenedDiff });
+    this.setState({ diff });
+  }
+
+  changeDescription = (from, to, chunkIndex, description) => {
+    const file = this.state.diff.find(f => {
+      return f.from === from && f.to === to && f.chunkIndex === chunkIndex;
+    })
+
+    if (!file) {
+      throw new Error(`Couldn't find a file with from = ${from}, to = ${to}, and chunkIndex = ${chunkIndex}`)
+    }
+
+    file.description = description;
+    this.setState({ diff: this.state.diff })
   }
 
   render() {
@@ -71,7 +88,7 @@ class App extends Component {
     }
 
     return (
-      <Diff diff={diff} onSortEnd={this.onSortEnd} useDragHandle />
+      <Diff diff={diff} onSortEnd={this.onSortEnd} changeDescription={this.changeDescription} useDragHandle />
     );
   }
 }
