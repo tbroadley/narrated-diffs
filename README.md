@@ -28,3 +28,7 @@ Paste a diff into the tool (you can easily get one by adding `.diff` to the end 
   - See a list of chunks in their original order under each file in the tree, navigate quickly by clicking on them
     - Show the position in the file, the context line?
 - Permissions system (authenticate with GitHub/GitLab?)
+- On PR creation, automatically add link to narrated diff in PR description, or in a comment
+- On PR merge, automatically add link to narrated diff to the merge commit and lock the narrated diff
+  - Webhook from GitHub to Narrated Diffs backend that is sent on PR merge?
+  - GitHub Actions?
