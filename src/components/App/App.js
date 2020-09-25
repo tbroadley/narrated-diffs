@@ -68,7 +68,7 @@ class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const id = window.location.pathname.split('/')[2]
+    const id = window.location.pathname.split('/')[1]
     if (!id) {
       return
     }
@@ -95,7 +95,7 @@ class App extends Component {
     )
     const newId = (await response.json()).id;
     this.setState({ id: newId })
-    window.history.replaceState({}, '', `/literate-diffs/${newId}`);
+    window.history.replaceState({}, '', `/${newId}`);
   }, 1000)
 
   onSortEnd = ({ oldIndex, newIndex }) => {
