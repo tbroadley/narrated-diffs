@@ -32,3 +32,4 @@ Paste a diff into the tool (you can easily get one by adding `.diff` to the end 
 - On PR merge, automatically add link to narrated diff to the merge commit and lock the narrated diff
   - Webhook from GitHub to Narrated Diffs backend that is sent on PR merge?
   - GitHub Actions?
+- Syntax highlighting
