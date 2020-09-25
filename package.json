@@ -35,7 +35,7 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://thomasbroadley.com/literate-diffs",
+  "homepage": "https://narrated-diffs.thomasbroadley.com",
   "devDependencies": {
     "nodemon": "^2.0.4"
   }
