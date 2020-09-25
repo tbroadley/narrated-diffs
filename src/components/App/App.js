@@ -1,4 +1,6 @@
+import { throttle } from 'lodash';
 import flatMap from 'lodash/flatMap';
+import fetch from 'node-fetch';
 import parseDiff from 'parse-diff';
 import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
@@ -37,7 +39,7 @@ class PasteDiff extends Component {
   }
 
   fetchDiff = async () => {
-    const response = await fetch(`http://localhost:3500/diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
+    const response = await fetch(`http://localhost:3500/github-diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
     this.props.setDiff(await response.text())
   }
 
@@ -63,25 +65,41 @@ class PasteDiff extends Component {
 class App extends Component {
   state = {};
 
-  componentDidMount() {
-    const storedDiff = localStorage.getItem("diff");
-    if (!storedDiff) {
-      return;
+  async componentDidMount() {
+    const id = window.location.pathname.split('/')[2]
+    if (!id) {
+      return
     }
-    this.setState({
-      diff: JSON.parse(storedDiff)
-    });
+
+    const response = await fetch(`http://localhost:3500/diffs/${id}`)
+    const { diff } = await response.json(); 
+    this.setState({ id, diff })
   }
 
-  storeLocally() {
-    localStorage.setItem("diff", JSON.stringify(this.state.diff));
-  }
+  persistDiff = throttle(async () => {
+    const { id, diff } = this.state;
+
+    if (id) {
+      return fetch(
+        `http://localhost:3500/diffs/${id}`,
+        { method: 'PATCH', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ id, diff }) }
+      )
+    }
+
+    const response = await fetch(
+      'http://localhost:3500/diffs',
+      { method: 'POST', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ diff }) }
+    )
+    const newId = (await response.json()).id;
+    this.setState({ id: newId })
+    window.history.replaceState({}, '', `/literate-diffs/${newId}`);
+  }, 1000)
 
   onSortEnd = ({ oldIndex, newIndex }) => {
     this.setState({
       diff: arrayMove(this.state.diff, oldIndex, newIndex),
     }, () => {
-      this.storeLocally();
+      this.persistDiff();
     });
   };
 
@@ -91,7 +109,7 @@ class App extends Component {
       return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex, description: '' }));
     })
     this.setState({ diff }, () => {
-      this.storeLocally();
+      this.persistDiff();
     });
   }
 
@@ -106,7 +124,7 @@ class App extends Component {
 
     file.description = description;
     this.setState({ diff: this.state.diff }, () => {
-      this.storeLocally();
+      this.persistDiff();
     })
   }
 

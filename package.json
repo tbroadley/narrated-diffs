@@ -8,14 +8,16 @@
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "parse-diff": "^0.4.0",
+    "pg": "^8.3.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-quill": "^1.3.5",
     "react-scripts": "^3.4.3",
-    "react-sortable-hoc": "^0.6.8"
+    "react-sortable-hoc": "^0.6.8",
+    "uuid": "^8.3.0"
   },
   "scripts": {
-    "serve": "nodemon server",
+    "serve": "PGUSER=thomas PGPASSWORD=thomas PGDATABASE=narrated-diffs nodemon server",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
