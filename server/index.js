@@ -11,7 +11,7 @@ const init = async () => {
       method: 'GET',
       path: '/diff',
       handler: async (request, h) => {
-          // FIXME add validation to only fetch diffs
+          // FIXME add validation to only fetch diffs, e.g. it has to end with .diff
           const response = await fetch(request.query.url);
           return response.text();
       }
