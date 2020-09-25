@@ -28,16 +28,16 @@ const init = async () => {
         handler: async (request, h) => {
             const { id } = request.params;
 
-            try {
-                const response = await pool.query(
-                    'SELECT * FROM diffs WHERE id = $1',
-                    [id]
-                )
-                return { id: response.rows[0].id, diff: JSON.parse(response.rows[0].diff) };
-            } catch (e) {
-                // console.log(e)
+            const response = await pool.query(
+                'SELECT * FROM diffs WHERE id = $1',
+                [id]
+            )
+            if (response.rowCount === 0) {
                 return h.response().code(404);
             }
+
+            const { diff } = response.rows[0];
+            return { id, diff: JSON.parse(diff) };
         }
     })
 
