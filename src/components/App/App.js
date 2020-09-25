@@ -7,6 +7,8 @@ import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import File from '../File/File';
 import './App.css';
 
+const { REACT_APP_SERVER_URL } = process.env;
+
 const Diff = SortableContainer(({ diff = [], changeDescription }) => (
   <div className='app'>
     {
@@ -39,7 +41,7 @@ class PasteDiff extends Component {
   }
 
   fetchDiff = async () => {
-    const response = await fetch(`http://localhost:3500/github-diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
+    const response = await fetch(`${REACT_APP_SERVER_URL}/github-diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`)
     this.props.setDiff(await response.text())
   }
 
@@ -72,7 +74,7 @@ class App extends Component {
     }
 
     this.setState({ loading: true })
-    const response = await fetch(`http://localhost:3500/diffs/${id}`)
+    const response = await fetch(`${REACT_APP_SERVER_URL}/diffs/${id}`)
     const { diff } = await response.json(); 
     this.setState({ id, diff, loading: false })
   }
@@ -82,13 +84,13 @@ class App extends Component {
 
     if (id) {
       return fetch(
-        `http://localhost:3500/diffs/${id}`,
+        `${REACT_APP_SERVER_URL}/diffs/${id}`,
         { method: 'PATCH', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ id, diff }) }
       )
     }
 
     const response = await fetch(
-      'http://localhost:3500/diffs',
+      `${REACT_APP_SERVER_URL}/diffs`,
       { method: 'POST', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ diff }) }
     )
     const newId = (await response.json()).id;
