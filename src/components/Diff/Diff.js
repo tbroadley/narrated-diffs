@@ -4,13 +4,12 @@ import parseDiff from 'parse-diff';
 import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import File from '../File/File';
-import './OldApp.css';
-import { Home } from '../Home/Home';
+import './Diff.css';
 
 const { REACT_APP_SERVER_URL } = process.env;
 
-const Diff = SortableContainer(({ diff = [], changeDescription, moveToTop, moveToBottom }) => (
-  <div className='old-app'>
+const DiffBase = SortableContainer(({ diff = [], changeDescription, moveToTop, moveToBottom }) => (
+    <>
     {
       diff.map(({
         from,
@@ -33,41 +32,28 @@ const Diff = SortableContainer(({ diff = [], changeDescription, moveToTop, moveT
       ))
     }
     <p>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a></p>
-  </div>
+    </>
 ));
 
-class App extends Component {
+export class Diff extends Component {
   state = {};
 
   async componentDidMount() {
-    const id = window.location.pathname.split('/')[1]
-    if (!id) {
-      return
-    }
-
     this.setState({ loading: true })
+
+    const { id } = this.props;
     const response = await fetch(`${REACT_APP_SERVER_URL}/diffs/${id}`)
     const { diff } = await response.json();
     this.setState({ id, diff, loading: false })
   }
 
   persistDiff = throttle(async () => {
-    const { id, diff } = this.state;
-
-    if (id) {
-      return fetch(
+    const { id } = this.props
+    const { diff } = this.state;
+    return fetch(
         `${REACT_APP_SERVER_URL}/diffs/${id}`,
         { method: 'PATCH', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ id, diff }) }
-      )
-    }
-
-    const response = await fetch(
-      `${REACT_APP_SERVER_URL}/diffs`,
-      { method: 'POST', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ diff }) }
     )
-    const newId = (await response.json()).id;
-    this.setState({ id: newId })
-    window.history.replaceState({}, '', `/${newId}`);
   }, 1000)
 
   onSortEnd = ({ oldIndex, newIndex }) => {
@@ -109,18 +95,17 @@ class App extends Component {
   render() {
     const { loading, diff } = this.state;
 
-    if (loading) {
-      return <div className='old-app'><p>Loading...</p></div>
-    }
-
-    if (!diff) {
-      return <Home setDiff={this.setDiff} />
-    }
-
-    return (
-      <Diff diff={diff} onSortEnd={this.onSortEnd} changeDescription={this.changeDescription} moveToTop={this.moveToTop} moveToBottom={this.moveToBottom} useDragHandle />
-    );
+    return <div className='diff'>
+        {loading ? <p>Loading...</p> :
+      <DiffBase
+        diff={diff}
+        onSortEnd={this.onSortEnd}
+        changeDescription={this.changeDescription}
+        moveToTop={this.moveToTop}
+        moveToBottom={this.moveToBottom}
+        useDragHandle
+      />
+        }
+        </div>
   }
 }
-
-export default App;
