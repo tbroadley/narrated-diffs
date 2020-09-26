@@ -8,7 +8,7 @@ export default function App() {
     <Router>
       <Switch>
         <Route path="/:id">
-          {({ match }) => <Diff id={match.params.id} />}
+          {({ match }) => <Diff id={match?.params.id} />}
         </Route>
         <Route path="/">
           <Home />
