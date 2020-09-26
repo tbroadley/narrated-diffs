@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import File from '../File/File';
 import './OldApp.css';
-import { PasteDiff } from '../PasteDiff/PasteDiff';
+import { Home } from '../Home/Home';
 
 const { REACT_APP_SERVER_URL } = process.env;
 
@@ -114,7 +114,7 @@ class App extends Component {
     }
 
     if (!diff) {
-      return <PasteDiff setDiff={this.setDiff} />
+      return <Home setDiff={this.setDiff} />
     }
 
     return (

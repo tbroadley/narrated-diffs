@@ -1,10 +1,13 @@
 import fetch from 'node-fetch';
+import flatMap from 'lodash/flatMap';
+import parseDiff from 'parse-diff';
 import React, { Component } from 'react';
-import './PasteDiff.css'
+import { withRouter } from 'react-router-dom';
+import './Home.css'
 
 const { REACT_APP_SERVER_URL } = process.env;
 
-export class PasteDiff extends Component {
+class HomeBase extends Component {
   state = { tab: "PR", diff: "", url: "", loading: false };
 
   onChange = (event) => {
@@ -15,11 +18,31 @@ export class PasteDiff extends Component {
     this.setState({ tab })
   }
 
-  fetchDiff = async () => {
+  createDiff = async () => {
     this.setState({ loading: true })
-    const response = await fetch(`${REACT_APP_SERVER_URL}/github-diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`);
-    this.props.setDiff(await response.text());
-    this.setState({ loading: false })
+
+    const rawDiff = this.state.diff;
+    const parsedDiff = parseDiff(rawDiff);
+    const diff = flatMap(parsedDiff, ({ from, to, chunks }) => {
+      return chunks.map((chunk, chunkIndex) => ({ from, to, chunks: [chunk], chunkIndex, description: '' }));
+    })
+
+    const response = await fetch(
+      `${REACT_APP_SERVER_URL}/diffs`,
+      { method: 'POST', headers: { 'content-type': 'application/json'}, body: JSON.stringify({ diff }) }
+    )
+    const { id } = await response.json();
+    this.props.history.push(`/${id}`);
+  }
+
+  fetchAndCreateDiff = async () => {
+    this.setState({ loading: true })
+    const response = await fetch(
+      `${REACT_APP_SERVER_URL}/github-diff?url=${encodeURIComponent(this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff"))}`
+    );
+    this.setState({ diff: await response.text() }, () => {
+      this.createDiff();
+    })
   };
 
   render() {
@@ -44,10 +67,7 @@ export class PasteDiff extends Component {
             <p>
               <textarea name="diff" value={this.state.diff} onChange={this.onChange} />
             </p>
-            <button onClick={() => {
-              this.setState({ loading: true })
-              this.props.setDiff(this.state.diff)
-            }}>
+            <button onClick={this.createDiff}>
               Narrate that diff!
             </button>
             {this.state.loading && (
@@ -62,7 +82,7 @@ export class PasteDiff extends Component {
             <p>
               <input name="url" value={this.state.url} onChange={this.onChange} />
             </p>
-            <button onClick={() => this.fetchDiff()}>Narrate that diff!</button>
+            <button onClick={this.fetchAndCreateDiff}>Narrate that diff!</button>
             {this.state.loading && (
               <p>Loading...</p>
             )}
@@ -72,3 +92,5 @@ export class PasteDiff extends Component {
     );
   }
 }
+
+export const Home = withRouter(HomeBase)
