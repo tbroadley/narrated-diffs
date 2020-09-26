@@ -34,9 +34,9 @@ const File = SortableElement(({ eltIndex, from, to, chunkIndex, chunks, descript
   } else {
     fileDescription = (
       <p className='file__description'>
-        File
-        <span className='file__from-name'>{from}</span>
-        renamed to
+        File{' '}
+        <span className='file__from-name'>{from}</span>{' '}
+        renamed to{' '}
         <span className='file__to-name'>{to}</span>
       </p>
     );
