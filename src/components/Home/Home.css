@@ -1,67 +1,68 @@
 .paste-diff {
-    height: 100%;
-    width: 500px;
-    max-width: 100%;
+  height: 100%;
+  width: 500px;
+  max-width: 100%;
 
-    margin: auto;
+  margin: auto;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (max-width: 767px) {
-    .paste-diff {
-        justify-content: start;
-    }
+  .paste-diff {
+    justify-content: start;
+  }
 }
 
 .paste-diff__tabs {
-    width: 100%;
-    display: flex;
+  width: 100%;
+  display: flex;
 }
 
 .paste-diff__tab {
-    height: 48px;
-    width: 72px;
+  height: 48px;
+  width: 72px;
 
-    font-size: 24px;
+  font-size: 24px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    border: 1px solid #aaaaaa;
-    border-radius: 5px;
-    border-bottom: none;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
+  border-bottom: none;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .paste-diff__tab--active {
-    background-color: #f3f3f3;
+  background-color: #f3f3f3;
 }
 
 .paste-diff__tab:not(:last-child) {
-    border-right: none;
+  border-right: none;
 }
 
 .paste-diff__tab-body {
-    height: 500px;
-    max-height: 100%;
+  height: 500px;
+  max-height: 100%;
 
-    padding: 0 1rem;
+  padding: 0 1rem;
 
-    border: 1px solid #aaaaaa;
-    border-radius: 5px;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
 }
 
-.paste-diff__tab-body input, .paste-diff__tab-body textarea {
-    width: 100%;
+.paste-diff__tab-body input,
+.paste-diff__tab-body textarea {
+  width: 100%;
 }
 
 .paste-diff__tab-body textarea {
-    height: 200px;
-    box-sizing: border-box;
-    resize: none;
+  height: 200px;
+  box-sizing: border-box;
+  resize: none;
 }

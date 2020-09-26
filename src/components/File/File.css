@@ -2,7 +2,7 @@
   margin: 1rem 0;
   padding: 1rem;
   border: 1px solid #000000;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .file__controls {
@@ -21,16 +21,18 @@
 
 .file__drag-handle {
   width: 1.5rem;
-};
+}
 
 .file__description {
   margin: 0 0 1rem;
   line-height: 1.5;
 }
 
-.file__name, .file__from-name, .file__to-name {
+.file__name,
+.file__from-name,
+.file__to-name {
   display: inline-block;
   padding: 0 0.25rem;
   font-family: monospace, monospace;
-  background-color: #D7D7D7;
+  background-color: #d7d7d7;
 }

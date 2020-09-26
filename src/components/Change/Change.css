@@ -5,14 +5,16 @@
 }
 
 .change--added {
-  background-color: #D7FFD7;
+  background-color: #d7ffd7;
 }
 
 .change--deleted {
-  background-color: #FFD7D7;
+  background-color: #ffd7d7;
 }
 
-.change__addition-or-deletion, .change__line-number, .change__content {
+.change__addition-or-deletion,
+.change__line-number,
+.change__content {
   font-family: monospace, monospace;
 }
 

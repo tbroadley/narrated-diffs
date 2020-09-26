@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@hapi/hapi": "^20.0.1",
+    "eslint-config-prettier": "^6.12.0",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "parse-diff": "^0.4.0",
@@ -23,7 +24,15 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix src",
+    "format": "prettier --write .",
     "eject": "react-scripts eject"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged && npm run lint:fix"
+    }
   },
   "browserslist": {
     "production": [
@@ -39,6 +48,12 @@
   },
   "homepage": "https://narrated-diffs.thomasbroadley.com",
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.9.0",
+    "eslint-plugin-react": "^7.21.2",
+    "husky": "^4.3.0",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.0.2"
   }
 }
