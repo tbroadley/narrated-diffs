@@ -4,13 +4,13 @@ import parseDiff from 'parse-diff';
 import React, { Component } from 'react';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import File from '../File/File';
-import './App.css';
-import { PasteDiff } from './PasteDiff';
+import './OldApp.css';
+import { PasteDiff } from '../PasteDiff/PasteDiff';
 
 const { REACT_APP_SERVER_URL } = process.env;
 
 const Diff = SortableContainer(({ diff = [], changeDescription, moveToTop, moveToBottom }) => (
-  <div className='app'>
+  <div className='old-app'>
     {
       diff.map(({
         from,
@@ -110,7 +110,7 @@ class App extends Component {
     const { loading, diff } = this.state;
 
     if (loading) {
-      return <div className='app'><p>Loading...</p></div>
+      return <div className='old-app'><p>Loading...</p></div>
     }
 
     if (!diff) {
