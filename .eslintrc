@@ -15,9 +15,9 @@
   ],
   "rules": {
     "react/prop-types": "off",
-    "sort-imports": "error",
     "import/order": ["error", { "newlines-between": "always" }],
-    "import/no-default-export": "error"
+    "import/no-default-export": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "settings": {
     "react": {

@@ -3,7 +3,8 @@ import flatMap from "lodash/flatMap";
 import parseDiff from "parse-diff";
 import React, { Component } from "react";
 import { SortableContainer, arrayMove } from "react-sortable-hoc";
-import File from "../File/File";
+
+import { File } from "../File/File";
 import "./Diff.css";
 
 const { REACT_APP_SERVER_URL } = process.env;

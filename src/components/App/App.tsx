@@ -1,9 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+
 import { Home } from "../Home/Home";
 import { Diff } from "../Diff/Diff";
 
-export default function App() {
+export function App() {
   return (
     <Router>
       <Switch>

@@ -2,7 +2,7 @@ import parseDiff from "parse-diff";
 import React from "react";
 import "./Change.css";
 
-export default function Change({ change }: { change: parseDiff.Change }) {
+export function Change({ change }: { change: parseDiff.Change }) {
   const { type, content } = change;
   const lineNumber = change.type === "normal" ? change.ln2 : change.ln;
 

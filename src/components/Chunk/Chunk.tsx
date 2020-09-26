@@ -1,9 +1,10 @@
 import parseDiff from "parse-diff";
 import React from "react";
-import Change from "../Change/Change";
+
+import { Change } from "../Change/Change";
 import "./Chunk.css";
 
-export default function Chunk({
+export function Chunk({
   baseKey,
   content,
   changes,
