@@ -47,7 +47,7 @@ class HomeBase extends Component<RouteComponentProps> {
       body: JSON.stringify({ diff }),
     });
     const { id } = await response.json();
-    this.props.history.push(`/${id}`);
+    this.props.history.push(`/${id}/edit`);
   };
 
   fetchAndCreateDiff = async () => {

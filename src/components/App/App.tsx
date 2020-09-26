@@ -8,8 +8,11 @@ export function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/:id">
+        <Route path="/:id/edit">
           {({ match }) => <Diff id={match?.params.id} />}
+        </Route>
+        <Route path="/:id">
+          {({ match }) => <Diff readOnly id={match?.params.id} />}
         </Route>
         <Route path="/">
           <Home />

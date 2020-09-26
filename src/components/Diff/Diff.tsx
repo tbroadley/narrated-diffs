@@ -12,11 +12,13 @@ const { REACT_APP_SERVER_URL } = process.env;
 const DiffBase = SortableContainer(
   ({
     diff = [],
+    readOnly,
     changeDescription,
     moveToTop,
     moveToBottom,
   }: {
     diff: DiffFile[];
+    readOnly: boolean;
     changeDescription: (
       from: string,
       to: string,
@@ -30,6 +32,7 @@ const DiffBase = SortableContainer(
       {diff.map(({ from, to, chunks, chunkIndex, description }, index) => (
         <File
           key={`${from}-${to}-${chunkIndex}`}
+          readOnly={readOnly}
           description={description}
           changeDescription={changeDescription}
           chunkIndex={chunkIndex}
@@ -57,7 +60,7 @@ type DiffFile = {
   chunks: parseDiff.Chunk[];
 };
 
-export class Diff extends Component<{ id: string }> {
+export class Diff extends Component<{ readOnly?: boolean; id: string }> {
   state: { diff: DiffFile[]; loading: boolean } = { diff: [], loading: false };
 
   async componentDidMount() {
@@ -147,6 +150,7 @@ export class Diff extends Component<{ id: string }> {
           <p>Loading...</p>
         ) : (
           <DiffBase
+            readOnly={!!this.props.readOnly}
             diff={diff}
             onSortEnd={this.onSortEnd}
             changeDescription={this.changeDescription}

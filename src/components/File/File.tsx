@@ -13,6 +13,7 @@ const DragHandle = SortableHandle(() => (
 ));
 
 type FileProps = {
+  readOnly: boolean;
   eltIndex: number;
   from: string;
   to: string;
@@ -31,6 +32,7 @@ type FileProps = {
 
 const FileBase = SortableElement(
   ({
+    readOnly,
     eltIndex,
     from,
     to,
@@ -74,17 +76,26 @@ const FileBase = SortableElement(
 
     return (
       <div className="file">
-        <div className="file__controls">
-          <DragHandle />
-          <button onClick={() => moveToTop(eltIndex)}>Move to top</button>
-          <button onClick={() => moveToBottom(eltIndex)}>Move to bottom</button>
-        </div>
-        <div className="file__user-text">
-          <ReactQuill
-            value={description}
-            onChange={(d) => changeDescription(from, to, chunkIndex, d)}
-          />
-        </div>
+        {readOnly ? (
+          <div dangerouslySetInnerHTML={{ __html: description }} />
+        ) : (
+          <>
+            <div className="file__controls">
+              <DragHandle />
+              <button onClick={() => moveToTop(eltIndex)}>Move to top</button>
+              <button onClick={() => moveToBottom(eltIndex)}>
+                Move to bottom
+              </button>
+            </div>
+            <div className="file__user-text">
+              <ReactQuill
+                value={description}
+                onChange={(d) => changeDescription(from, to, chunkIndex, d)}
+              />
+            </div>
+          </>
+        )}
+
         {fileDescription}
         {to === DEV_NULL
           ? null
