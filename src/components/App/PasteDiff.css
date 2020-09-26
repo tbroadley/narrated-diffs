@@ -10,6 +10,12 @@
     justify-content: center;
 }
 
+@media (max-width: 767px) {
+    .paste-diff {
+        justify-content: start;
+    }
+}
+
 .paste-diff__tabs {
     width: 100%;
     display: flex;
