@@ -1,7 +1,11 @@
+import parseDiff from "parse-diff";
 import React from "react";
 import "./Change.css";
 
-export default function Change({ type, ln2, ln, content }) {
+export default function Change({ change }: { change: parseDiff.Change }) {
+  const { type, content } = change;
+  const lineNumber = change.type === "normal" ? change.ln2 : change.ln;
+
   return (
     <div
       className={`change ${type === "add" ? "change--added" : ""} ${
@@ -12,7 +16,7 @@ export default function Change({ type, ln2, ln, content }) {
         {type === "add" ? "+" : ""}
         {type === "del" ? "-" : ""}
       </div>
-      <div className="change__line-number">{type === "normal" ? ln2 : ln}</div>
+      <div className="change__line-number">{lineNumber}</div>
       <div className="change__content">{content.slice(1)}</div>
     </div>
   );

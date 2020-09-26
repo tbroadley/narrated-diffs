@@ -9,12 +9,26 @@ import "./Diff.css";
 const { REACT_APP_SERVER_URL } = process.env;
 
 const DiffBase = SortableContainer(
-  ({ diff = [], changeDescription, moveToTop, moveToBottom }) => (
+  ({
+    diff = [],
+    changeDescription,
+    moveToTop,
+    moveToBottom,
+  }: {
+    diff: DiffFile[];
+    changeDescription: (
+      from: string,
+      to: string,
+      chunkIndex: number,
+      description: string
+    ) => void;
+    moveToTop: (index: number) => void;
+    moveToBottom: (index: number) => void;
+  }) => (
     <>
       {diff.map(({ from, to, chunks, chunkIndex, description }, index) => (
         <File
           key={`${from}-${to}-${chunkIndex}`}
-          baseKey={`${from}-${to}-${chunkIndex}`}
           description={description}
           changeDescription={changeDescription}
           chunkIndex={chunkIndex}
@@ -34,8 +48,16 @@ const DiffBase = SortableContainer(
   )
 );
 
-export class Diff extends Component {
-  state = {};
+type DiffFile = {
+  from: string;
+  to: string;
+  chunkIndex: number;
+  description: string;
+  chunks: parseDiff.Chunk[];
+};
+
+export class Diff extends Component<{ id: string }> {
+  state: { diff: DiffFile[]; loading: boolean } = { diff: [], loading: false };
 
   async componentDidMount() {
     this.setState({ loading: true });
@@ -56,7 +78,13 @@ export class Diff extends Component {
     });
   }, 1000);
 
-  onSortEnd = ({ oldIndex, newIndex }) => {
+  onSortEnd = ({
+    oldIndex,
+    newIndex,
+  }: {
+    oldIndex: number;
+    newIndex: number;
+  }) => {
     this.setState(
       {
         diff: arrayMove(this.state.diff, oldIndex, newIndex),
@@ -67,13 +95,13 @@ export class Diff extends Component {
     );
   };
 
-  moveToTop = (oldIndex) => this.onSortEnd({ oldIndex, newIndex: 0 });
-  moveToBottom = (oldIndex) =>
+  moveToTop = (oldIndex: number) => this.onSortEnd({ oldIndex, newIndex: 0 });
+  moveToBottom = (oldIndex: number) =>
     this.onSortEnd({ oldIndex, newIndex: this.state.diff.length - 1 });
 
-  setDiff = (rawDiff) => {
+  setDiff = (rawDiff: string) => {
     const parsedDiff = parseDiff(rawDiff);
-    const diff = flatMap(parsedDiff, ({ from, to, chunks }) => {
+    const diff = flatMap(parsedDiff, ({ from, to, chunks }: parseDiff.File) => {
       return chunks.map((chunk, chunkIndex) => ({
         from,
         to,
@@ -87,7 +115,12 @@ export class Diff extends Component {
     });
   };
 
-  changeDescription = (from, to, chunkIndex, description) => {
+  changeDescription = (
+    from: string,
+    to: string,
+    chunkIndex: number,
+    description: string
+  ) => {
     const file = this.state.diff.find((f) => {
       return f.from === from && f.to === to && f.chunkIndex === chunkIndex;
     });

@@ -16,7 +16,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
-    "react-sortable-hoc": "^0.6.8",
+    "react-sortable-hoc": "^0.7.4",
     "uuid": "^8.3.0"
   },
   "scripts": {
@@ -48,6 +48,7 @@
   },
   "homepage": "https://narrated-diffs.thomasbroadley.com",
   "devDependencies": {
+    "@types/lodash": "^4.14.161",
     "@types/node": "^14.11.2",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",

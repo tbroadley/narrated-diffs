@@ -1,20 +1,28 @@
-import fetch from "node-fetch";
 import flatMap from "lodash/flatMap";
 import parseDiff from "parse-diff";
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import "./Home.css";
 
 const { REACT_APP_SERVER_URL } = process.env;
 
-class HomeBase extends Component {
-  state = { tab: "PR", diff: "", url: "", loading: false };
+enum Tab {
+  PR,
+  DIFF,
+}
 
-  onChange = (event) => {
+class HomeBase extends Component<RouteComponentProps> {
+  state = { tab: Tab.PR, diff: "", url: "", loading: false };
+
+  onChange = (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  onClickTab = (tab) => () => {
+  onClickTab = (tab: Tab) => () => {
     this.setState({ tab });
   };
 
@@ -60,23 +68,23 @@ class HomeBase extends Component {
         <div className="paste-diff__tabs">
           <div
             className={`paste-diff__tab ${
-              this.state.tab === "PR" ? "paste-diff__tab--active" : ""
+              this.state.tab === Tab.PR ? "paste-diff__tab--active" : ""
             }`}
-            onClick={this.onClickTab("PR")}
+            onClick={this.onClickTab(Tab.PR)}
           >
             PR
           </div>
           <div
             className={`paste-diff__tab ${
-              this.state.tab === "DIFF" ? "paste-diff__tab--active" : ""
+              this.state.tab === Tab.DIFF ? "paste-diff__tab--active" : ""
             }`}
-            onClick={this.onClickTab("DIFF")}
+            onClick={this.onClickTab(Tab.DIFF)}
           >
             Diff
           </div>
         </div>
 
-        {this.state.tab === "DIFF" && (
+        {this.state.tab === Tab.DIFF && (
           <div className="paste-diff__tab-body">
             <p>Paste a Git diff:</p>
             <p>
@@ -91,7 +99,7 @@ class HomeBase extends Component {
           </div>
         )}
 
-        {this.state.tab === "PR" && (
+        {this.state.tab === Tab.PR && (
           <div className="paste-diff__tab-body">
             <p>Paste a GitHub PR URL:</p>
             <p>

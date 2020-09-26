@@ -5,10 +5,28 @@ import { SortableElement, SortableHandle } from "react-sortable-hoc";
 import Chunk from "../Chunk/Chunk";
 import "./File.css";
 import move from "../../move.svg";
+import parseDiff from "parse-diff";
 
 const DragHandle = SortableHandle(() => (
   <img className="file__drag-handle" src={move} alt="Drag and drop this file" />
 ));
+
+type FileProps = {
+  eltIndex: number;
+  from: string;
+  to: string;
+  chunkIndex: number;
+  chunks: parseDiff.Chunk[];
+  description: string;
+  changeDescription: (
+    from: string,
+    to: string,
+    chunkIndex: number,
+    description: string
+  ) => void;
+  moveToTop: (index: number) => void;
+  moveToBottom: (index: number) => void;
+};
 
 const FileBase = SortableElement(
   ({
@@ -21,7 +39,7 @@ const FileBase = SortableElement(
     changeDescription,
     moveToTop,
     moveToBottom,
-  }) => {
+  }: FileProps) => {
     const DEV_NULL = "/dev/null";
 
     let fileDescription;
@@ -85,12 +103,12 @@ const FileBase = SortableElement(
   }
 );
 
-export default function File(props) {
+export default function File(props: FileProps) {
   const BANNED_FILES = ["package-lock.json", "yarn.lock"];
 
   if (BANNED_FILES.includes(props.from) || BANNED_FILES.includes(props.to)) {
     return null;
   }
 
-  return <FileBase {...props} />;
+  return <FileBase index={props.eltIndex} {...props} />;
 }
