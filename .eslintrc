@@ -1,19 +1,29 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "env": { "browser": true, "node": true },
+  "plugins": ["@typescript-eslint"],
   "extends": [
+    "react-app",
     "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
     "prettier",
     "prettier/react"
   ],
   "rules": {
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "sort-imports": "error",
+    "import/order": ["error", { "newlines-between": "always" }],
+    "import/no-default-export": "error"
   },
   "settings": {
     "react": {
       "version": "detect"
     },
-    "linkComponents": [{ "name": "Link", "linkAttribute": "to" }]
+    "linkComponents": [{ "name": "Link", "linkAttribute": "to" }],
+    "import/extensions": [".js", ".jsx", ".ts", ".tsx"]
   }
 }
