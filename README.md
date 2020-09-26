@@ -35,3 +35,5 @@ Paste a diff into the tool (you can easily get one by adding `.diff` to the end 
   - GitHub Actions?
 - Permissions system (authenticate with GitHub/GitLab?)
 - Create a browser extension that makes it easy to initialise narrated diffs from a GitHub PR page
+- Display comments from GitHub
+- Allow adding comments to GitHub from Narrated Diffs
