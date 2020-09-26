@@ -5,12 +5,21 @@
   background-color: #FFFFFF;
 }
 
+.file__controls {
+  display: flex;
+  align-items: center;
+  margin: 0 0 1rem;
+}
+
+.file__controls > *:not(:last-child) {
+  margin-right: 0.5rem;
+}
+
 .file__user-text {
   margin: 0 0 1rem;
 }
 
 .file__drag-handle {
-  margin: 0 0 1rem;
   width: 1.5rem;
 };
 

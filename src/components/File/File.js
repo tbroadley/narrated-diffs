@@ -8,7 +8,7 @@ import move from '../../move.svg';
 
 const DragHandle = SortableHandle(() => <img className="file__drag-handle" src={move} alt="Drag and drop this file" />)
 
-const File = SortableElement(({ index, from, to, chunkIndex, chunks, description, changeDescription }) => {
+const File = SortableElement(({ eltIndex, from, to, chunkIndex, chunks, description, changeDescription, moveToTop, moveToBottom }) => {
   const DEV_NULL = '/dev/null';
 
   let fileDescription;
@@ -44,7 +44,11 @@ const File = SortableElement(({ index, from, to, chunkIndex, chunks, description
 
   return (
     <div className='file'>
-      <DragHandle />
+      <div className='file__controls'>
+        <DragHandle />
+        <button onClick={() => moveToTop(eltIndex)}>Move to top</button>
+        <button onClick={() => moveToBottom(eltIndex)}>Move to bottom</button>
+      </div>
       <div className='file__user-text'>
         <ReactQuill
           value={description}

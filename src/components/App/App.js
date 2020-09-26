@@ -9,7 +9,7 @@ import { PasteDiff } from './PasteDiff';
 
 const { REACT_APP_SERVER_URL } = process.env;
 
-const Diff = SortableContainer(({ diff = [], changeDescription }) => (
+const Diff = SortableContainer(({ diff = [], changeDescription, moveToTop, moveToBottom }) => (
   <div className='app'>
     {
       diff.map(({
@@ -25,6 +25,9 @@ const Diff = SortableContainer(({ diff = [], changeDescription }) => (
           description={description}
           changeDescription={changeDescription}
           chunkIndex={chunkIndex}
+          moveToTop={moveToTop}
+          moveToBottom={moveToBottom}
+          eltIndex={index}
           {...{ index, from, to, chunks }}
         />
       ))
@@ -75,6 +78,9 @@ class App extends Component {
     });
   };
 
+  moveToTop = (oldIndex) => this.onSortEnd({ oldIndex, newIndex: 0 })
+  moveToBottom = (oldIndex) => this.onSortEnd({ oldIndex, newIndex: this.state.diff.length - 1 })
+
   setDiff = (rawDiff) => {
     const parsedDiff = parseDiff(rawDiff);
     const diff = flatMap(parsedDiff, ({ from, to, chunks }) => {
@@ -112,7 +118,7 @@ class App extends Component {
     }
 
     return (
-      <Diff diff={diff} onSortEnd={this.onSortEnd} changeDescription={this.changeDescription} useDragHandle />
+      <Diff diff={diff} onSortEnd={this.onSortEnd} changeDescription={this.changeDescription} moveToTop={this.moveToTop} moveToBottom={this.moveToBottom} useDragHandle />
     );
   }
 }
