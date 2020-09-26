@@ -64,57 +64,59 @@ class HomeBase extends Component<RouteComponentProps> {
 
   render() {
     return (
-      <div className="paste-diff">
-        <div className="paste-diff__tabs">
-          <div
-            className={`paste-diff__tab ${
-              this.state.tab === Tab.PR ? "paste-diff__tab--active" : ""
-            }`}
-            onClick={this.onClickTab(Tab.PR)}
-          >
-            PR
+      <div className="home">
+        <div className="paste-diff">
+          <div className="paste-diff__tabs">
+            <div
+              className={`paste-diff__tab ${
+                this.state.tab === Tab.PR ? "paste-diff__tab--active" : ""
+              }`}
+              onClick={this.onClickTab(Tab.PR)}
+            >
+              PR
+            </div>
+            <div
+              className={`paste-diff__tab ${
+                this.state.tab === Tab.DIFF ? "paste-diff__tab--active" : ""
+              }`}
+              onClick={this.onClickTab(Tab.DIFF)}
+            >
+              Diff
+            </div>
           </div>
-          <div
-            className={`paste-diff__tab ${
-              this.state.tab === Tab.DIFF ? "paste-diff__tab--active" : ""
-            }`}
-            onClick={this.onClickTab(Tab.DIFF)}
-          >
-            Diff
-          </div>
+
+          {this.state.tab === Tab.DIFF && (
+            <div className="paste-diff__tab-body">
+              <p>Paste a Git diff:</p>
+              <p>
+                <textarea
+                  name="diff"
+                  value={this.state.diff}
+                  onChange={this.onChange}
+                />
+              </p>
+              <button onClick={this.createDiff}>Narrate that diff!</button>
+              {this.state.loading && <p>Loading...</p>}
+            </div>
+          )}
+
+          {this.state.tab === Tab.PR && (
+            <div className="paste-diff__tab-body">
+              <p>Paste a GitHub PR URL:</p>
+              <p>
+                <input
+                  name="url"
+                  value={this.state.url}
+                  onChange={this.onChange}
+                />
+              </p>
+              <button onClick={this.fetchAndCreateDiff}>
+                Narrate that diff!
+              </button>
+              {this.state.loading && <p>Loading...</p>}
+            </div>
+          )}
         </div>
-
-        {this.state.tab === Tab.DIFF && (
-          <div className="paste-diff__tab-body">
-            <p>Paste a Git diff:</p>
-            <p>
-              <textarea
-                name="diff"
-                value={this.state.diff}
-                onChange={this.onChange}
-              />
-            </p>
-            <button onClick={this.createDiff}>Narrate that diff!</button>
-            {this.state.loading && <p>Loading...</p>}
-          </div>
-        )}
-
-        {this.state.tab === Tab.PR && (
-          <div className="paste-diff__tab-body">
-            <p>Paste a GitHub PR URL:</p>
-            <p>
-              <input
-                name="url"
-                value={this.state.url}
-                onChange={this.onChange}
-              />
-            </p>
-            <button onClick={this.fetchAndCreateDiff}>
-              Narrate that diff!
-            </button>
-            {this.state.loading && <p>Loading...</p>}
-          </div>
-        )}
       </div>
     );
   }
