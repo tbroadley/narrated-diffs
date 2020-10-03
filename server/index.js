@@ -24,7 +24,7 @@ const init = async () => {
       cors: {
         origin:
           NODE_ENV === "production"
-            ? ["narrated-diffs.thomasbroadley.com"]
+            ? ["https://narrated-diffs.thomasbroadley.com"]
             : ["*"],
         credentials: true,
       },
