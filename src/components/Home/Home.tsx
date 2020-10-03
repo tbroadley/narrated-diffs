@@ -12,7 +12,7 @@ enum Tab {
 }
 
 class HomeBase extends Component<RouteComponentProps> {
-  state = { tab: Tab.PR, diff: "", url: "", loading: false };
+  state = { tab: Tab.PR, diff: "", url: "", loading: false, error: undefined };
 
   onChange = (
     event:
@@ -26,11 +26,26 @@ class HomeBase extends Component<RouteComponentProps> {
     this.setState({ tab });
   };
 
+  setError = (error: string) => {
+    this.setState({
+      loading: false,
+      error,
+    });
+  };
+
   createDiff = async () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, error: undefined });
 
     const rawDiff = this.state.diff;
-    const parsedDiff = parseDiff(rawDiff);
+
+    let parsedDiff;
+    try {
+      parsedDiff = parseDiff(rawDiff);
+    } catch (e) {
+      this.setError(`Couldn't parse that diff: ${e.message}`);
+      return;
+    }
+
     const diff = flatMap(parsedDiff, ({ from, to, chunks }) => {
       return chunks.map((chunk, chunkIndex) => ({
         from,
@@ -41,37 +56,63 @@ class HomeBase extends Component<RouteComponentProps> {
       }));
     });
 
-    const response = await fetch(`${REACT_APP_SERVER_URL}/diffs`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ diff }),
-    });
-    const { id } = await response.json();
-    this.props.history.push(`/${id}/edit`);
+    try {
+      const response = await fetch(`${REACT_APP_SERVER_URL}/diffs`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ diff }),
+      });
+      if (!response.ok) {
+        this.setError("Couldn't create a narrated diff");
+        return;
+      }
+
+      const { id } = await response.json();
+      this.props.history.push(`/${id}/edit`);
+    } catch (e) {
+      this.setError(`Couldn't create a narrated diff: ${e.message}`);
+    }
   };
 
   fetchAndCreateDiff = async () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, error: undefined });
 
     const match = this.state.url.match(
       /github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/
     );
     if (!match) {
+      this.setError("Couldn't parse that GitHub PR URL");
       return;
     }
 
     const [, owner, repo, pullNumber] = match;
+    if (!owner || !repo || !pullNumber) {
+      this.setError("Couldn't parse that GitHub PR URL");
+      return;
+    }
 
-    const response = await fetch(
-      `${REACT_APP_SERVER_URL}/github-diff?owner=${owner}&repo=${repo}&pull_number=${pullNumber}`,
-      {
-        credentials: "include",
+    try {
+      const response = await fetch(
+        `${REACT_APP_SERVER_URL}/github-diff?owner=${owner}&repo=${repo}&pull_number=${pullNumber}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        this.setError(
+          `Couldn't fetch the diff for that GitHub PR: ${
+            (await response.json()).message
+          }`
+        );
+        return;
       }
-    );
 
-    this.setState({ diff: await response.text() }, () => {
-      this.createDiff();
-    });
+      this.setState({ diff: await response.text() }, () => {
+        this.createDiff();
+      });
+    } catch (e) {
+      this.setError(`Couldn't fetch the diff for that GitHub PR: ${e.message}`);
+    }
   };
 
   render() {
@@ -126,6 +167,9 @@ class HomeBase extends Component<RouteComponentProps> {
                 Narrate that diff!
               </button>
               {this.state.loading && <p>Loading...</p>}
+              {this.state.error && (
+                <p className="paste-diff__error">{this.state.error}</p>
+              )}
             </div>
           )}
         </div>
