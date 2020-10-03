@@ -39,13 +39,13 @@ const init = async () => {
     clientId: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
     scope: ["user", "repo"],
-    isSecure: NODE_ENV === "production",
+    isSecure: false, // In production, apache2 rewrites Set-Cookie headers to create secure cookies
   });
 
   server.auth.strategy("session", "cookie", {
     cookie: {
       password: COOKIE_PASSWORD,
-      isSecure: NODE_ENV === "production",
+      isSecure: false, // In production, apache2 rewrites Set-Cookie headers to create secure cookies
       isSameSite: NODE_ENV === "production" && "Strict",
       path: "/",
     },
