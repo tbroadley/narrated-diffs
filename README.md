@@ -18,6 +18,8 @@ Paste a diff into the tool (you can easily get one by adding `.diff` to the end 
 
 - [x] Buttons to move a chunk to the top or bottom of the narrated diff, or up or down one spot
 - [x] Read-only mode for review purposes
+- [x] GitHub authentication
+- [x] Viewing diffs for PRs from private repos
 - File tree element on the left
   - Filter the chunk list by selecting a file in the tree
   - Filter out chunks from a specific file
