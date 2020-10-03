@@ -115,6 +115,18 @@ const init = async () => {
 
   server.route({
     method: "GET",
+    path: "/users/logout",
+    options: {
+      auth: "session",
+    },
+    handler: (request, h) => {
+      request.cookieAuth.clear();
+      return h.redirect("http://localhost:3000");
+    },
+  });
+
+  server.route({
+    method: "GET",
     path: "/users/current",
     options: {
       auth: "session",
