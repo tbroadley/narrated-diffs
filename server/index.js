@@ -41,7 +41,7 @@ const init = async () => {
     clientSecret: GITHUB_CLIENT_SECRET,
     scope: ["user", "repo"],
     isSecure: false, // In production, apache2 rewrites Set-Cookie headers to create secure cookies
-    location: `${SERVER_URL}/users/login`,
+    location: SERVER_URL,
   });
 
   server.auth.strategy("session", "cookie", {
