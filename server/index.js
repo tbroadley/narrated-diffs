@@ -115,6 +115,20 @@ const init = async () => {
 
   server.route({
     method: "GET",
+    path: "/users/current",
+    options: {
+      auth: "session",
+    },
+    handler: async (request, h) => {
+      const { credentials } = request.auth;
+      if (!credentials) return h.response().code(401);
+
+      return { githubUsername: credentials.github_username };
+    },
+  });
+
+  server.route({
+    method: "GET",
     path: "/github-diff",
     options: {
       auth: {

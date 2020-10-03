@@ -5,14 +5,28 @@ import { Home } from "../Home/Home";
 import { Diff } from "../Diff/Diff";
 import { Nav } from "../Nav/Nav";
 
+const { REACT_APP_SERVER_URL } = process.env;
+
 export function App() {
+  const [username, setUsername] = React.useState(undefined);
+
+  React.useEffect(() => {
+    (async () => {
+      const response = await fetch(`${REACT_APP_SERVER_URL}/users/current`, {
+        credentials: "include",
+      });
+      const { githubUsername } = await response.json();
+      setUsername(githubUsername);
+    })();
+  }, []);
+
   return (
     <Router>
       <Switch>
         <Route path="/:id/edit">
           {({ match }) => (
             <div>
-              <Nav id={match?.params.id} />
+              <Nav username={username} id={match?.params.id} />
               <Diff id={match?.params.id} />
             </div>
           )}
@@ -20,12 +34,13 @@ export function App() {
         <Route path="/:id">
           {({ match }) => (
             <div>
-              <Nav id={match?.params.id} readOnly />
+              <Nav username={username} id={match?.params.id} readOnly />
               <Diff id={match?.params.id} readOnly />
             </div>
           )}
         </Route>
         <Route path="/">
+          <Nav username={username} />
           <Home />
         </Route>
       </Switch>

@@ -1,5 +1,5 @@
 .home {
-  height: 100%;
+  height: calc(100% - 50px);
 }
 
 .paste-diff {
