@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const {
   NODE_ENV,
+  SERVER_HOST,
   PUBLIC_URL,
   COOKIE_PASSWORD,
   GITHUB_CLIENT_ID,
@@ -18,7 +19,7 @@ const pool = new pg.Pool();
 const init = async () => {
   const server = Hapi.server({
     port: 3500,
-    host: "localhost",
+    host: SERVER_HOST,
     routes: {
       cors: {
         origin:
