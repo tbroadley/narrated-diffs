@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const {
   NODE_ENV,
+  SERVER_URL,
   PUBLIC_URL,
   COOKIE_PASSWORD,
   GITHUB_CLIENT_ID,
@@ -40,6 +41,7 @@ const init = async () => {
     clientSecret: GITHUB_CLIENT_SECRET,
     scope: ["user", "repo"],
     isSecure: false, // In production, apache2 rewrites Set-Cookie headers to create secure cookies
+    location: `${SERVER_URL}/users/login`,
   });
 
   server.auth.strategy("session", "cookie", {
