@@ -5,6 +5,14 @@ import fetch from "node-fetch";
 import pg from "pg";
 import { v4 as uuidv4 } from "uuid";
 
+const {
+  NODE_ENV,
+  PUBLIC_URL,
+  COOKIE_PASSWORD,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+} = process.env;
+
 const pool = new pg.Pool();
 
 const init = async () => {
@@ -13,8 +21,10 @@ const init = async () => {
     host: "localhost",
     routes: {
       cors: {
-        // TODO restrict this
-        origin: ["*"],
+        origin:
+          NODE_ENV === "production"
+            ? ["api.narrated-diffs.thomasbroadley.com"]
+            : ["*"],
         credentials: true,
       },
     },
@@ -25,21 +35,19 @@ const init = async () => {
 
   server.auth.strategy("github", "bell", {
     provider: "github",
-    password:
-      "riddance bunion supplier laptop humped purebred commodity unbraided letdown retry catalyze clambake",
-    clientId: "57f384e33d904dc4345e",
-    clientSecret: "5a32924f61414ed324d1d369b1dde9cdfa6226d0",
+    password: COOKIE_PASSWORD,
+    clientId: GITHUB_CLIENT_ID,
+    clientSecret: GITHUB_CLIENT_SECRET,
     scope: ["user", "repo"],
-    isSecure: process.env.NODE_ENV === "production",
+    isSecure: NODE_ENV === "production",
   });
 
   server.auth.strategy("session", "cookie", {
     cookie: {
-      password:
-        "riddance bunion supplier laptop humped purebred commodity unbraided letdown retry catalyze clambake",
-      isSecure: process.env.NODE_ENV === "production",
+      password: COOKIE_PASSWORD,
+      isSecure: NODE_ENV === "production",
+      isSameSite: NODE_ENV === "production" && "Strict",
       path: "/",
-      isSameSite: process.env.NODE_ENV === "production" && "Strict",
     },
     validateFunc: async (_, session) => {
       const response = await pool.query("SELECT * FROM users WHERE id = $1", [
@@ -105,7 +113,7 @@ const init = async () => {
 
           request.cookieAuth.set({ id: response.rows[0].id });
 
-          return h.redirect("http://localhost:3000");
+          return h.redirect(PUBLIC_URL);
         } catch (e) {
           console.error(e);
         }
@@ -121,7 +129,7 @@ const init = async () => {
     },
     handler: (request, h) => {
       request.cookieAuth.clear();
-      return h.redirect("http://localhost:3000");
+      return h.redirect(PUBLIC_URL);
     },
   });
 
@@ -155,7 +163,7 @@ const init = async () => {
 
       const { url, owner, repo, pull_number: pullNumber } = request.query;
       if (url) {
-        // FIXME add validation to only fetch diffs, e.g. it has to end with .diff
+        // TODO add validation to only fetch diffs, e.g. it has to end with .diff
         response = await fetch(url);
       } else {
         response = await fetch(

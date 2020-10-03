@@ -7,6 +7,7 @@
     "@hapi/bell": "^12.1.1",
     "@hapi/cookie": "^11.0.2",
     "@hapi/hapi": "^20.0.1",
+    "dotenv": "^8.2.0",
     "eslint-config-prettier": "^6.12.0",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
@@ -22,7 +23,7 @@
     "uuid": "^8.3.0"
   },
   "scripts": {
-    "serve": "PGUSER=thomas PGPASSWORD=thomas PGDATABASE=narrated-diffs nodemon server",
+    "serve": "DOTENV_CONFIG_PATH=server/.env nodemon -r dotenv/config server",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
