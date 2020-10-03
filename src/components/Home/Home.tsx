@@ -52,11 +52,23 @@ class HomeBase extends Component<RouteComponentProps> {
 
   fetchAndCreateDiff = async () => {
     this.setState({ loading: true });
-    const response = await fetch(
-      `${REACT_APP_SERVER_URL}/github-diff?url=${encodeURIComponent(
-        this.state.url.replace(/(\/pull\/\d+).*/, "$1.diff")
-      )}`
+
+    const match = this.state.url.match(
+      /github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/
     );
+    if (!match) {
+      return;
+    }
+
+    const [, owner, repo, pullNumber] = match;
+
+    const response = await fetch(
+      `${REACT_APP_SERVER_URL}/github-diff?owner=${owner}&repo=${repo}&pull_number=${pullNumber}`,
+      {
+        credentials: "include",
+      }
+    );
+
     this.setState({ diff: await response.text() }, () => {
       this.createDiff();
     });
