@@ -123,11 +123,5 @@ const FileBase = SortableElement(
 );
 
 export function File(props: FileProps) {
-  const BANNED_FILES = ["package-lock.json", "yarn.lock"];
-
-  if (BANNED_FILES.includes(props.from) || BANNED_FILES.includes(props.to)) {
-    return null;
-  }
-
   return <FileBase index={props.eltIndex} {...props} />;
 }

@@ -9,6 +9,8 @@ import "./Diff.css";
 
 const { REACT_APP_SERVER_URL } = process.env;
 
+const HIDDEN_FILES = ["package-lock.json", "yarn.lock"];
+
 const DiffBase = SortableContainer(
   ({
     diff = [],
@@ -29,19 +31,23 @@ const DiffBase = SortableContainer(
     moveToBottom: (index: number) => void;
   }) => (
     <>
-      {diff.map(({ from, to, chunks, chunkIndex, description }, index) => (
-        <File
-          key={`${from}-${to}-${chunkIndex}`}
-          readOnly={readOnly}
-          description={description}
-          changeDescription={changeDescription}
-          chunkIndex={chunkIndex}
-          moveToTop={moveToTop}
-          moveToBottom={moveToBottom}
-          eltIndex={index}
-          {...{ index, from, to, chunks }}
-        />
-      ))}
+      {diff
+        .filter(({ from, to }) => {
+          return !HIDDEN_FILES.includes(from) && !HIDDEN_FILES.includes(to);
+        })
+        .map(({ from, to, chunks, chunkIndex, description }, index) => (
+          <File
+            key={`${from}-${to}-${chunkIndex}`}
+            readOnly={readOnly}
+            description={description}
+            changeDescription={changeDescription}
+            chunkIndex={chunkIndex}
+            moveToTop={moveToTop}
+            moveToBottom={moveToBottom}
+            eltIndex={index}
+            {...{ index, from, to, chunks }}
+          />
+        ))}
       <p>
         Icons made by{" "}
         <a href="https://www.flaticon.com/authors/freepik" title="Freepik">
