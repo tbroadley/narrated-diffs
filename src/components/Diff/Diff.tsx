@@ -30,12 +30,13 @@ const DiffBase = SortableContainer(
     moveToTop: (index: number) => void;
     moveToBottom: (index: number) => void;
   }) => (
-    <>
-      {diff
-        .filter(({ from, to }) => {
-          return !HIDDEN_FILES.includes(from) && !HIDDEN_FILES.includes(to);
-        })
-        .map(({ from, to, chunks, chunkIndex, description }, index) => (
+    <div className="diff">
+      {diff.map(({ from, to, chunks, chunkIndex, description }, index) => {
+        if (HIDDEN_FILES.includes(from) || HIDDEN_FILES.includes(to)) {
+          return null;
+        }
+
+        return (
           <File
             key={`${from}-${to}-${chunkIndex}`}
             readOnly={readOnly}
@@ -48,14 +49,15 @@ const DiffBase = SortableContainer(
             eltIndex={index}
             {...{ from, to, chunks }}
           />
-        ))}
+        );
+      })}
       <p>
         Icons made by{" "}
         <a href="https://www.flaticon.com/authors/freepik" title="Freepik">
           Freepik
         </a>
       </p>
-    </>
+    </div>
   )
 );
 
@@ -96,6 +98,7 @@ export class Diff extends Component<{ readOnly?: boolean; id: string }> {
     oldIndex: number;
     newIndex: number;
   }) => {
+    console.log(oldIndex, newIndex);
     this.setState(
       {
         diff: arrayMove(this.state.diff, oldIndex, newIndex),
@@ -151,22 +154,20 @@ export class Diff extends Component<{ readOnly?: boolean; id: string }> {
   render() {
     const { loading, diff } = this.state;
 
-    return (
+    return loading ? (
       <div className="diff">
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <DiffBase
-            readOnly={!!this.props.readOnly}
-            diff={diff}
-            onSortEnd={this.onSortEnd}
-            changeDescription={this.changeDescription}
-            moveToTop={this.moveToTop}
-            moveToBottom={this.moveToBottom}
-            useDragHandle
-          />
-        )}
+        <p>Loading...</p>
       </div>
+    ) : (
+      <DiffBase
+        readOnly={!!this.props.readOnly}
+        diff={diff}
+        onSortEnd={this.onSortEnd}
+        changeDescription={this.changeDescription}
+        moveToTop={this.moveToTop}
+        moveToBottom={this.moveToBottom}
+        useDragHandle
+      />
     );
   }
 }
