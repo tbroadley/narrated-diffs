@@ -9,7 +9,14 @@ import "./File.css";
 import move from "../../move.svg";
 
 const DragHandle = SortableHandle(() => (
-  <img className="file__drag-handle" src={move} alt="Drag and drop this file" />
+  <img
+    className="file__drag-handle"
+    src={move}
+    alt="Drag and drop this file"
+    onMouseDown={(e) => {
+      e.preventDefault();
+    }}
+  />
 ));
 
 type FileProps = {
