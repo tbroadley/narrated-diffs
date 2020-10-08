@@ -37,7 +37,7 @@ type FileProps = {
   moveToBottom: (index: number) => void;
 };
 
-const FileBase = SortableElement(
+export const File = SortableElement(
   ({
     readOnly,
     eltIndex,
@@ -121,7 +121,3 @@ const FileBase = SortableElement(
     );
   }
 );
-
-export function File(props: FileProps) {
-  return <FileBase index={props.eltIndex} {...props} />;
-}

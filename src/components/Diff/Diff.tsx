@@ -44,8 +44,9 @@ const DiffBase = SortableContainer(
             chunkIndex={chunkIndex}
             moveToTop={moveToTop}
             moveToBottom={moveToBottom}
+            index={index}
             eltIndex={index}
-            {...{ index, from, to, chunks }}
+            {...{ from, to, chunks }}
           />
         ))}
       <p>
