@@ -22,11 +22,7 @@ const init = async () => {
     host: "localhost",
     routes: {
       cors: {
-        origin:
-          NODE_ENV === "production"
-            ? ["https://narrated-diffs.thomasbroadley.com"]
-            : ["*"],
-        credentials: true,
+        origin: ["*"]
       },
     },
   });
@@ -34,15 +30,15 @@ const init = async () => {
   await server.register(Bell);
   await server.register(Cookie);
 
-  server.auth.strategy("github", "bell", {
-    provider: "github",
-    password: COOKIE_PASSWORD,
-    clientId: GITHUB_CLIENT_ID,
-    clientSecret: GITHUB_CLIENT_SECRET,
-    scope: ["user", "repo"],
-    isSecure: false, // In production, apache2 rewrites Set-Cookie headers to create secure cookies
-    location: SERVER_URL,
-  });
+  // server.auth.strategy("github", "bell", {
+  //   provider: "github",
+  //   password: COOKIE_PASSWORD,
+  //   clientId: GITHUB_CLIENT_ID,
+  //   clientSecret: GITHUB_CLIENT_SECRET,
+  //   scope: ["user", "repo"],
+  //   isSecure: false, // In production, apache2 rewrites Set-Cookie headers to create secure cookies
+  //   location: SERVER_URL,
+  // });
 
   server.auth.strategy("session", "cookie", {
     cookie: {
@@ -61,65 +57,6 @@ const init = async () => {
       }
 
       return { valid: true, credentials: response.rows[0] };
-    },
-  });
-
-  server.route({
-    method: ["GET", "POST"],
-    path: "/users/login",
-    options: {
-      auth: {
-        mode: "try",
-        strategy: "github",
-      },
-      handler: async (request, h) => {
-        try {
-          const { auth } = request;
-
-          if (!auth.isAuthenticated) {
-            return h
-              .response(`GitHub authentication failed: ${auth.error.message}`)
-              .code(401);
-          }
-
-          // TODO handle refresh tokens
-          const {
-            token,
-            profile: { id: githubId, username },
-          } = auth.credentials;
-
-          let response = await pool.query(
-            "SELECT * FROM users WHERE github_id = $1",
-            [githubId]
-          );
-
-          if (response.rowCount === 0) {
-            await pool.query(
-              "INSERT INTO users (github_id, github_username, github_token) values ($1, $2, $3)",
-              [githubId, username, token]
-            );
-            response = await pool.query(
-              "SELECT * FROM users WHERE github_id = $1",
-              [githubId]
-            );
-          } else {
-            await pool.query(
-              "UPDATE users set github_username = $1, github_token = $2 where github_id = $3",
-              [username, token, githubId]
-            );
-            response = await pool.query(
-              "SELECT * FROM users WHERE github_id = $1",
-              [githubId]
-            );
-          }
-
-          request.cookieAuth.set({ id: response.rows[0].id });
-
-          return h.redirect(PUBLIC_URL);
-        } catch (e) {
-          console.error(e);
-        }
-      },
     },
   });
 
